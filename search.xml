@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>0109 什么是微服务</title>
+      <link href="/2020/01/10/0109-%E4%BB%80%E4%B9%88%E6%98%AF%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
+      <url>/2020/01/10/0109-%E4%BB%80%E4%B9%88%E6%98%AF%E5%BE%AE%E6%9C%8D%E5%8A%A1/</url>
+      
+        <content type="html"><![CDATA[<p>微服务架构风格，就像是把一个单独的应用程序开发为一套小服务，每个小服务运行在自己的进程中，并使用轻量级机制通信，通常是HTTP API.这些服务围绕业务能力来构建，并通过完全自动化部署机制来独立部署。这些服务使用不同的编程语言书写，以及不同数据存储技术，并保持最低限度的集中式管理。</p><a id="more"></a><h4 id="微服务为什么要使用Spring-Cloud"><a href="#微服务为什么要使用Spring-Cloud" class="headerlink" title="微服务为什么要使用Spring Cloud"></a>微服务为什么要使用Spring Cloud</h4><h4 id="从使用nginx说起"><a href="#从使用nginx说起" class="headerlink" title="从使用nginx说起"></a>从使用nginx说起</h4><p>最初的服务化解决方案是给提供相同服务提供一个统一的域名，然后服务调用者向这个域名发送HTTP请求，由Nginx负责请求的分发和跳转</p><p><img src="https://s2.ax1x.com/2020/01/10/lhuml9.jpg" alt="nginx示意图lhuml9.jpg"></p><p>但是这样有不少缺点:</p><ul><li><p>Nginx作为中间层，在配置文件中耦合了服务调用的逻辑，这削弱了微服务的完整性，也使得Nginx在一定程度上变成了一个重量级的ESB.</p></li><li><p>服务的信息分散在各个系统，无法统一管理和维护。每一次的服务调用都是一次尝试，服务消费者并不知道有哪些实例在给他们提供服务。这不符合DevOps的理念。</p></li><li><p>无法直观的看到服务提供者和服务消费者当前的运行和通信频率。这也不符合DevOps的理念。</p></li><li><p>消费者的失败重发，负载均衡等都没有统一策略，这加大了开发每个服务的难度，不利于快熟演化。</p></li></ul><p>为了解决上面的问题，我们需要一个现成的中心化组件对服务进行整合，将每个服务的信息整合，包括服务的组件名称、地址、数量等。服务的调用方在请求每项服务时首先通过中心组件获取提供这项服务的实例的信息（IP、端口等），再通过默认或自定义的策略选择该服务的某一提供者直接进行访问，所以我们引入了Dubbo。</p><h4 id="基于Dubbo实现微服务"><a href="#基于Dubbo实现微服务" class="headerlink" title="基于Dubbo实现微服务"></a>基于Dubbo实现微服务</h4><p>Dubbo是阿里开源的一个SOA服务治理解决方案，文档丰富，在国内的使用度非常高。</p><p><img src="https://s2.ax1x.com/2020/01/10/lhKc4O.jpg" alt="DubbolhKc4O.jpg"></p><p>使用Dubbo构建的微服务，已经比较好地解决上面提到的问题：</p><ul><li>调用中间层变成了可选组件，消费者可以直接访问服务提供者</li><li>服务信息被集中到Registry中，形成了服务治理的中心组件。</li><li>通过Monitor监控系统，可以直观地展示服务调用的统计信息。</li><li>Consumer可以进行负载均衡、服务降级的选择</li></ul><p>但是对于微服务架构而言，Dubbo也并不是十全十美的：</p><ul><li>Registry严重依赖第三方组件（Zookeeper或者redis），当这些组件出现问题，服务调用很快就会中断（当然，我之前也试过中断时，会有缓存还是可以调用）</li><li>Dubbo只支持RPC调用。使得服务提供方与调用方在代码上产生了强依赖，服务提供者需要不断将包含公共代码的jar包打包出来供消费者使用。一旦打包出现问题，就会导致服务调用出现问题（公共代码是指 包含公共配置：DO(和数据库同步，用于持久化对象)，VO(传输数据)，工具包，接口等）</li></ul><h4 id="新的选择–Spring-cloud"><a href="#新的选择–Spring-cloud" class="headerlink" title="新的选择–Spring cloud"></a>新的选择–Spring cloud</h4><p>dubbo和spring cloud 区别</p><table><thead><tr><th align="left">Dubbo</th><th align="left">Spring Cloud</th><th></th></tr></thead><tbody><tr><td align="left">服务注册中心</td><td align="left">Zookeeper</td><td>Spring Cloud Netflix Eureka</td></tr><tr><td align="left">服务调用方式</td><td align="left">RPC</td><td>REST API</td></tr><tr><td align="left">服务监控</td><td align="left">Dubbo-monitor</td><td>Spring Boot Admin</td></tr><tr><td align="left">断路器</td><td align="left">不完善</td><td>Spring Cloud Netflix Hystrix</td></tr><tr><td align="left">服务网关</td><td align="left">无</td><td>Spring Cloud Netflix Zuul</td></tr><tr><td align="left">分布式配置</td><td align="left">无</td><td>Spring Cloud Config</td></tr><tr><td align="left">服务跟踪</td><td align="left">无</td><td>Spring Cloud Sleuth</td></tr><tr><td align="left">消息总线</td><td align="left">无</td><td>Spring Cloud Bus</td></tr><tr><td align="left">数据流</td><td align="left">无</td><td>Spring Cloud Stream</td></tr><tr><td align="left">批量任务</td><td align="left">无</td><td>Spring Cloud Task</td></tr></tbody></table><blockquote><p>服务调用方式：Spring Cloud 抛弃了Dubbo的RPC通信，采用的是基于HTTP的REST方式。严格来说，这两种各有优劣。虽然从一定程度上来说，后者牺牲了服务调用的性能，但也避免了上面提到的原生RPC带来的问题。而且REST相比RPC更为灵活，服务提供方和调用的依赖只依赖一纸契约，不存在代码级别的强依赖，这在强调快速演化的微服务环境下，显得更加合适。</p></blockquote>]]></content>
+      
+      
+      <categories>
+          
+          <category> Spring cloud </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Spring cloud </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>hexo大致教程</title>
       <link href="/2020/01/10/hexo/"/>
       <url>/2020/01/10/hexo/</url>
