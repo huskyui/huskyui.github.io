@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>工作队列&#39;</title>
+      <link href="/2020/02/20/%E5%B7%A5%E4%BD%9C%E9%98%9F%E5%88%97/"/>
+      <url>/2020/02/20/%E5%B7%A5%E4%BD%9C%E9%98%9F%E5%88%97/</url>
+      
+        <content type="html"><![CDATA[<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>RabbitMQ是消息代理。它接收信息和转发信息。你可以把他考虑成一个邮局。当你讲邮寄的信放在邮局时，你可以确定邮差先生或者女士会把邮件最终送到你的收件人手中。当然邮局和RabbitMQ最大的区别，RabbitMq不接受纸张，它只接收，存储，转发二进制的数据消息快。</p><p>下面讲一些RabbitMQ中的术语：</p><ul><li><p>Producer</p><p>生成只不过意味着发送信息。发送信息的程序是生产者</p></li><li><p>Queue</p><p>队列是驻留在RabbitMQ内的邮箱的名称。尽管消息flow RabbitMQ和你的程序，但是他们只能存储在队列中。一个队列只受主机的内存和磁盘限制，它的本质是一个大的消息缓冲区。许多消费者可以将消息发送到一个队列，许多消费者可以尝试从一个队列接收数据，这就我们表示队列的方式。</p></li><li><p>Consumer</p><p>消费和接收有相同的意义。消费者是一个主要接收消息的程序</p></li></ul><p>注意：生产者、消费者和代理不必都在同一主机上；实际上，在大多数应用程序中，它们并没有这样做。应用程序既可以是生成者也可以是消费者。</p><h3 id="简单队列"><a href="#简单队列" class="headerlink" title="简单队列"></a>简单队列</h3><p>简单队列，就是发送单个消息的消费者和接收信息并将其打印出来的使用者（消费者），不多叙述。</p><h3 id="工作队列"><a href="#工作队列" class="headerlink" title="工作队列"></a>工作队列</h3><p>工作队列主要是避免短时间内执行密集任务，并且必须等待它完成。我们将任务放在消息队列中，启动多个消费者，任务在他们中是共享的。</p><p>设计到工作队列，当然会有不同方式的工作队列</p><h4 id="ack"><a href="#ack" class="headerlink" title="ack"></a>ack</h4><p>关于<code>ack</code>这边多讲一点，<code>message acknowledgment</code>是消息确认，设置<code>autoack=true</code>之后，consumer返回一个ack（nowledgement）,告诉<code>rabbitMQ</code>已经接受信息，处理了特定的消息，<code>RabbitMQ</code>可以自由地删除它。</p><h4 id="轮询队列（Round-robin-dispatching）"><a href="#轮询队列（Round-robin-dispatching）" class="headerlink" title="轮询队列（Round-robin dispatching）"></a>轮询队列（Round-robin dispatching）</h4><p>将<code>autoAck</code>设置为<code>true</code>,默认情况下，RabbitMQ会发送每条信息给另一个消费者。每个消费者都会获取相同数量的。并且是间隔形式的。如有c1,c2消费者，10条消息，c1是0,2,4,6,8，c2是1,3,5,7,9。当然，在我打断点时，发现对应的数据会都一次性发送到c1，和c2，c1和c2处理信息时，并不影响彼此。</p><h4 id="公平队列"><a href="#公平队列" class="headerlink" title="公平队列"></a>公平队列</h4><p>在<code>RabbitMQ</code>分发信息的时候，可能会发现，一个consumer很忙，另一个一点也不忙。因为<code>RabbitMQ</code>对此一无所知，只是将第N条信息，发送给第Nconsumer.</p><p>为了解决这个，我们将basicQos方法和prefetechCount=1设置一起用。换句话说，在处理并确认上一条信息之前，不要将新信息发送给工人。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> prefetchCount = <span class="number">1</span>;</span><br><span class="line">channel.basicQos(prefetchCount);</span><br></pre></td></tr></table></figure><p>并且，我们需要将autoAck设为false和处理完一条消息后发送ack给<code>RabbitMQ</code></p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">DefaultConsumer defaultConsumer = <span class="keyword">new</span> DefaultConsumer(channel)&#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDelivery</span><span class="params">(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, <span class="keyword">byte</span>[] body)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">                String msg = <span class="keyword">new</span> String(body, <span class="string">"utf-8"</span>);</span><br><span class="line">                System.out.println(<span class="string">"receive1 : "</span> + msg);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">                    channel.basicAck(envelope.getDeliveryTag(),<span class="keyword">false</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">boolean</span> autoack = <span class="keyword">false</span>;</span><br><span class="line">        channel.basicConsume(QUEUE_NAME,autoack,defaultConsumer);</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> rabbitmq </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> RabbitMQ </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>0109 什么是微服务</title>
       <link href="/2020/01/10/0109-%E4%BB%80%E4%B9%88%E6%98%AF%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
       <url>/2020/01/10/0109-%E4%BB%80%E4%B9%88%E6%98%AF%E5%BE%AE%E6%9C%8D%E5%8A%A1/</url>
