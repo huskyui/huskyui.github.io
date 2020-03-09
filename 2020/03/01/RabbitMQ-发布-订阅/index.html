@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   
-  <title>hexo大致教程 | huskyui</title>
+  <title>&#39;RabbitMQ-发布/订阅&#39; | huskyui</title>
   
   
 
@@ -293,8 +293,8 @@
         
   
     <h1 class="title">
-      <a href="/2020/01/10/hexo/">
-        hexo大致教程
+      <a href="/2020/03/01/RabbitMQ-%E5%8F%91%E5%B8%83-%E8%AE%A2%E9%98%85/">
+        'RabbitMQ-发布/订阅'
       </a>
     </h1>
   
@@ -325,7 +325,7 @@
             <div class="new-meta-item date">
   <a class='notlink'>
     <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-    <p>2020-01-10</p>
+    <p>2020-03-01</p>
   </a>
 </div>
 
@@ -335,9 +335,9 @@
             
   
   <div class='new-meta-item category'>
-    <a href='/categories/Hexo/' rel="nofollow">
+    <a href='/categories/rabbitmq/' rel="nofollow">
       <i class="fas fa-folder-open" aria-hidden="true"></i>
-      <p>Hexo</p>
+      <p>rabbitmq</p>
     </a>
   </div>
 
@@ -383,23 +383,18 @@
 
     <section class="article typo">
       <div class="article-entry" itemprop="articleBody">
-        <h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><ul>
-<li><p>安装npm,并配置淘宝镜像</p>
-</li>
-<li><p>下载hexo</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+        <h3 id="发布与订阅"><a href="#发布与订阅" class="headerlink" title="发布与订阅"></a>发布与订阅</h3><p>在上一个教程中，我们创建一个工作队列，我们将每个人物，最终恰好分配到一个工人。然而，在这个部分，我们希望每个消息能分配给多个消费者。这种叫发布订阅模式。举例，注册时需要同时发送短信和发送email,我们会将用户注册的信息发给两个消费者，一个专门发送短信消费者，一个专门发送email消费者。</p>
+<p>RabbitMQ消息传递模型的核心思想是，生产者不直接想消息队列发送信息。实际上，生产者并不知道消息是否会被传递到任何队列上。</p>
+<h4 id="交换机"><a href="#交换机" class="headerlink" title="交换机"></a>交换机</h4><p>这里就讲到一个新型概念，交换机（exchange）,一方面接收生产者的信息，一方面推送给队列。交换器必须确切地知道如何处理它接收到的消息。它应该被附加到一个特定的队列吗?它应该被添加到许多队列中吗?或者它应该被丢弃。这些规则由exchange类型定义。有几种可用的交换类型:direct、topic、headers和fanout。下面讲：fanout，是一个比较简单的类型。只是将消息广播到它知道的所有队列中去。下图中X就是交换机。</p>
+<p><img src="https://www.rabbitmq.com/img/tutorials/exchanges.png" alt="exchange模型图"></p>
+<h3 id="生产者"><a href="#生产者" class="headerlink" title="生产者"></a>生产者</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class Send &#123;</span><br><span class="line">    private final static String EXCHANGE_NAME &#x3D; &quot;test_exchange_fanout&quot;;</span><br><span class="line">    public static void main(String[] args) throws IOException, TimeoutException &#123;</span><br><span class="line">        Connection connection &#x3D; ConnectionUtils.getConnection() ;</span><br><span class="line">        Channel channel &#x3D; connection.createChannel();</span><br><span class="line">        &#x2F;&#x2F; 声明队列</span><br><span class="line">        channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.FANOUT);&#x2F;&#x2F;分发类型fanout</span><br><span class="line">        String msg &#x3D; &quot;hello world ps&quot;;</span><br><span class="line">        &#x2F;&#x2F; 发送信息</span><br><span class="line">        channel.basicPublish(EXCHANGE_NAME,&quot;&quot;,null,msg.getBytes());</span><br><span class="line">        System.out.println(&quot;send success&quot;);</span><br><span class="line">        &#x2F;&#x2F; 关闭流</span><br><span class="line">        channel.close();</span><br><span class="line">        connection.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li>修改theme</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">教程 https:&#x2F;&#x2F;xaoxuu.com&#x2F;wiki&#x2F;material-x&#x2F;index.html</span><br><span class="line">完成后： 修改_config.yml中的theme配置</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li>部署到<code>用户名.github.io</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">大致教程： https:&#x2F;&#x2F;www.bilibili.com&#x2F;read&#x2F;cv2204874&#x2F;</span><br><span class="line">新建md： hexo new &#39;文件名&#39;</span><br><span class="line">会在&#x2F;source&#x2F;_posts&#x2F;文件名.md</span><br><span class="line"></span><br><span class="line">hexo d -g</span><br></pre></td></tr></table></figure>
+
+<h4 id="消费者"><a href="#消费者" class="headerlink" title="消费者"></a>消费者</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">public class Rece1 &#123;</span><br><span class="line">    private final static String QUEUE_NAME &#x3D; &quot;test_queu_email&quot;;</span><br><span class="line">    private final static String EXCHANGE_NAME &#x3D; &quot;test_exchange_fanout&quot;;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws IOException, TimeoutException &#123;</span><br><span class="line">        Connection connection &#x3D; ConnectionUtils.getConnection();</span><br><span class="line">        Channel channel &#x3D; connection.createChannel();</span><br><span class="line">        &#x2F;&#x2F; 绑定队列</span><br><span class="line">        channel.queueDeclare(QUEUE_NAME, false, false, false, null);</span><br><span class="line">        &#x2F;&#x2F; 绑定队列到交换机上</span><br><span class="line">        channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, &quot;&quot;);</span><br><span class="line">        &#x2F;&#x2F;qos&#x3D;1</span><br><span class="line">        channel.basicQos(1);</span><br><span class="line">        DefaultConsumer consumer &#x3D; new DefaultConsumer(channel) &#123;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException &#123;</span><br><span class="line">                System.out.println(&quot;send email &quot; + new String(body, Charset.defaultCharset()));</span><br><span class="line">                channel.basicAck(envelope.getDeliveryTag(), false);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        boolean autoAck &#x3D; false;</span><br><span class="line">        channel.basicConsume(QUEUE_NAME, autoAck, consumer);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class Rece2 &#123;</span><br><span class="line">    private final static String QUEUE_NAME &#x3D; &quot;test_queu_msg&quot;;</span><br><span class="line">    private final static String EXCHANGE_NAME &#x3D; &quot;test_exchange_fanout&quot;;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws IOException, TimeoutException &#123;</span><br><span class="line">        Connection connection &#x3D; ConnectionUtils.getConnection();</span><br><span class="line">        Channel channel &#x3D; connection.createChannel();</span><br><span class="line">        &#x2F;&#x2F; 绑定队列</span><br><span class="line">        channel.queueDeclare(QUEUE_NAME, false, false, false, null);</span><br><span class="line">        &#x2F;&#x2F; 绑定队列到交换机上</span><br><span class="line">        channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, &quot;&quot;);</span><br><span class="line">        &#x2F;&#x2F;qos&#x3D;1</span><br><span class="line">        channel.basicQos(1);</span><br><span class="line">        DefaultConsumer consumer &#x3D; new DefaultConsumer(channel) &#123;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException &#123;</span><br><span class="line">                System.out.println(&quot;send msg &quot; + new String(body, Charset.defaultCharset()));</span><br><span class="line">                channel.basicAck(envelope.getDeliveryTag(), false);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        boolean autoAck &#x3D; false;</span><br><span class="line">        channel.basicConsume(QUEUE_NAME, autoAck, consumer);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="官方推荐的queue-name"><a href="#官方推荐的queue-name" class="headerlink" title="官方推荐的queue_name"></a>官方推荐的queue_name</h4><p>官方希望能够实现，生成唯一名称queue_name,并且一旦断开生产者连接，队列自动删除。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String queueName &#x3D; channel.queueDeclare().getQueue();</span><br></pre></td></tr></table></figure>
 
 
       </div>
@@ -413,10 +408,10 @@
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-01-10T11:48:58+08:00">
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-03-09T18:29:36+08:00">
   <a class='notlink'>
     <i class="fas fa-clock" aria-hidden="true"></i>
-    <p>updated at Jan 10, 2020</p>
+    <p>updated at Mar 9, 2020</p>
   </a>
 </div>
 
@@ -425,7 +420,7 @@
         
           
   
-  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Hexo/" rel="nofollow"><i class="fas fa-tag" aria-hidden="true"></i><p>Hexo</p></a></div>
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/RabbitMQ/" rel="nofollow"><i class="fas fa-tag" aria-hidden="true"></i><p>RabbitMQ</p></a></div>
 
 
         
@@ -438,7 +433,7 @@
       
         <a class="-mob-share-qq" title="QQ好友" rel="external nofollow noopener noreferrer"
           
-          href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/01/10/hexo/&title=hexo大致教程 | huskyui&summary="
+          href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/03/01/RabbitMQ-%E5%8F%91%E5%B8%83-%E8%AE%A2%E9%98%85/&title='RabbitMQ-发布/订阅' | huskyui&summary="
           
           >
           
@@ -450,7 +445,7 @@
       
         <a class="-mob-share-qzone" title="QQ空间" rel="external nofollow noopener noreferrer"
           
-          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://yoursite.com/2020/01/10/hexo/&title=hexo大致教程 | huskyui&summary="
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://yoursite.com/2020/03/01/RabbitMQ-%E5%8F%91%E5%B8%83-%E8%AE%A2%E9%98%85/&title='RabbitMQ-发布/订阅' | huskyui&summary="
           
           >
           
@@ -462,7 +457,7 @@
       
         <a class="-mob-share-weibo" title="微博" rel="external nofollow noopener noreferrer"
           
-          href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/01/10/hexo/&title=hexo大致教程 | huskyui&summary="
+          href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/03/01/RabbitMQ-%E5%8F%91%E5%B8%83-%E8%AE%A2%E9%98%85/&title='RabbitMQ-发布/订阅' | huskyui&summary="
           
           >
           
@@ -486,36 +481,22 @@
       
           <div class="prev-next">
               
-                  <section class="prev">
-                      <span class="art-item-left">
-                          <h6><i class="fas fa-chevron-left" aria-hidden="true"></i>&nbsp;Previous</h6>
-                          <h4>
-                              <a href="/2020/01/10/0109-%E4%BB%80%E4%B9%88%E6%98%AF%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="prev" title="0109 什么是微服务">
-                                
-                                    0109 什么是微服务
-                                
-                              </a>
-                          </h4>
-                          
-                              
-                              <h6 class="tags">
-                                  <a class="tag" href="/tags/Spring-cloud/"><i class="fas fa-tag fa-fw" aria-hidden="true"></i> Spring cloud</a>
-                              </h6>
-                          
-                      </span>
-                  </section>
-              
               
                   <section class="next">
                       <span class="art-item-right" aria-hidden="true">
                           <h6>Next&nbsp;<i class="fas fa-chevron-right" aria-hidden="true"></i></h6>
                           <h4>
-                              <a href="/2020/01/10/hello-world/" rel="prev" title="Hello World">
+                              <a href="/2020/02/20/%E5%B7%A5%E4%BD%9C%E9%98%9F%E5%88%97/" rel="prev" title="工作队列">
                                   
-                                      Hello World
+                                      工作队列
                                   
                               </a>
                           </h4>
+                          
+                              
+                              <h6 class="tags">
+                                  <a class="tag" href="/tags/RabbitMQ/"><i class="fas fa-tag fa-fw" aria-hidden="true"></i> RabbitMQ</a>
+                              </h6>
                           
                       </span>
                   </section>
@@ -544,7 +525,7 @@
 
   <script>
     window.subData = {
-      title: 'hexo大致教程',
+      title: ''RabbitMQ-发布/订阅'',
       tools: true
     }
   </script>
@@ -706,7 +687,7 @@
 </header>
 
     <div class='content pure'>
-      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#步骤"><span class="toc-text">步骤</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#发布与订阅"><span class="toc-text">发布与订阅</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#交换机"><span class="toc-text">交换机</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生产者"><span class="toc-text">生产者</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#消费者"><span class="toc-text">消费者</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#官方推荐的queue-name"><span class="toc-text">官方推荐的queue_name</span></a></li></ol></li></ol>
     </div>
   </section>
 
