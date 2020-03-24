@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   
-  <title>工作队列 | huskyui</title>
+  <title>SpringCloud-Hystrix | huskyui</title>
   
   
 
@@ -46,7 +46,7 @@
   
   
   <div class="cover-wrapper">
-    <cover class='cover RabbitMQ half'>
+    <cover class='cover post half'>
       
         
   <h1 class='title'>面对疾风吧</h1>
@@ -281,7 +281,7 @@
       <div class='l_main'>
   
 
-  <article id="RabbitMQ" class="post white-box article-type-RabbitMQ" itemscope itemprop="blogPost">
+  <article id="post" class="post white-box article-type-post" itemscope itemprop="blogPost">
     
 
 
@@ -293,8 +293,8 @@
         
   
     <h1 class="title">
-      <a href="/2020/02/20/%E5%B7%A5%E4%BD%9C%E9%98%9F%E5%88%97/">
-        工作队列
+      <a href="/2020/03/23/SpringCloud-Hystrix/">
+        SpringCloud-Hystrix
       </a>
     </h1>
   
@@ -325,7 +325,7 @@
             <div class="new-meta-item date">
   <a class='notlink'>
     <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-    <p>2020-02-20</p>
+    <p>2020-03-23</p>
   </a>
 </div>
 
@@ -335,9 +335,9 @@
             
   
   <div class='new-meta-item category'>
-    <a href='/categories/rabbitmq/' rel="nofollow">
+    <a href='/categories/springcloud/' rel="nofollow">
       <i class="fas fa-folder-open" aria-hidden="true"></i>
-      <p>rabbitmq</p>
+      <p>springcloud</p>
     </a>
   </div>
 
@@ -383,75 +383,141 @@
 
     <section class="article typo">
       <div class="article-entry" itemprop="articleBody">
-        <h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>RabbitMQ是消息代理。它接收信息和转发信息。你可以把他考虑成一个邮局。当你讲邮寄的信放在邮局时，你可以确定邮差先生或者女士会把邮件最终送到你的收件人手中。当然邮局和RabbitMQ最大的区别，RabbitMq不接受纸张，它只接收，存储，转发二进制的数据消息快。</p>
-<p>下面讲一些RabbitMQ中的术语：</p>
-<ul>
-<li><p>Producer</p>
-<p>生成只不过意味着发送信息。发送信息的程序是生产者</p>
-</li>
-<li><p>Queue</p>
-<p>队列是驻留在RabbitMQ内的邮箱的名称。尽管消息flow RabbitMQ和你的程序，但是他们只能存储在队列中。一个队列只受主机的内存和磁盘限制，它的本质是一个大的消息缓冲区。许多消费者可以将消息发送到一个队列，许多消费者可以尝试从一个队列接收数据，这就我们表示队列的方式。</p>
-</li>
-<li><p>Consumer</p>
-<p>消费和接收有相同的意义。消费者是一个主要接收消息的程序</p>
-</li>
-</ul>
-<p>注意：生产者、消费者和代理不必都在同一主机上；实际上，在大多数应用程序中，它们并没有这样做。应用程序既可以是生成者也可以是消费者。</p>
-<h3 id="简单队列"><a href="#简单队列" class="headerlink" title="简单队列"></a>简单队列</h3><p>简单队列，就是发送单个消息的消费者和接收信息并将其打印出来的使用者（消费者），不多叙述。</p>
-<h3 id="工作队列"><a href="#工作队列" class="headerlink" title="工作队列"></a>工作队列</h3><p>工作队列主要是避免短时间内执行密集任务，并且必须等待它完成。我们将任务放在消息队列中，启动多个消费者，任务在他们中是共享的。</p>
-<p>设计到工作队列，当然会有不同方式的工作队列</p>
-<h4 id="ack"><a href="#ack" class="headerlink" title="ack"></a>ack</h4><p>关于<code>ack</code>这边多讲一点，<code>message acknowledgment</code>是消息确认，设置<code>autoack=true</code>之后，consumer返回一个ack（nowledgement）,告诉<code>rabbitMQ</code>已经接受信息，处理了特定的消息，<code>RabbitMQ</code>可以自由地删除它。</p>
-<h4 id="轮询队列（Round-robin-dispatching）"><a href="#轮询队列（Round-robin-dispatching）" class="headerlink" title="轮询队列（Round-robin dispatching）"></a>轮询队列（Round-robin dispatching）</h4><p>将<code>autoAck</code>设置为<code>true</code>,默认情况下，RabbitMQ会发送每条信息给另一个消费者。每个消费者都会获取相同数量的。并且是间隔形式的。如有c1,c2消费者，10条消息，c1是0,2,4,6,8，c2是1,3,5,7,9。当然，在我打断点时，发现对应的数据会都一次性发送到c1，和c2，c1和c2处理信息时，并不影响彼此。</p>
-<h4 id="公平队列"><a href="#公平队列" class="headerlink" title="公平队列"></a>公平队列</h4><p>在<code>RabbitMQ</code>分发信息的时候，可能会发现，一个consumer很忙，另一个一点也不忙。因为<code>RabbitMQ</code>对此一无所知，只是将第N条信息，发送给第Nconsumer.</p>
-<p>为了解决这个，我们将basicQos方法和prefetechCount=1设置一起用。换句话说，在处理并确认上一条信息之前，不要将新信息发送给工人。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> prefetchCount = <span class="number">1</span>;</span><br><span class="line">channel.basicQos(prefetchCount);</span><br></pre></td></tr></table></figure>
+        <h3 id="Hystrix"><a href="#Hystrix" class="headerlink" title="Hystrix"></a>Hystrix</h3><p>Hystrix is a latency and fault tolerance library designed to isolate points of access to remote systems, services and 3rd party libraries, stop cascading failure and enable resilience in complex distributed systems where failure is inevitable.</p>
+<p>Hystrix是一个延迟和容错库，旨在隔离远程系统、服务和第三方库的访问点，停止次级故障，并且不可避免的复杂分布式系统中实现自我恢复能力。</p>
+<h4 id="配置hystrix"><a href="#配置hystrix" class="headerlink" title="配置hystrix"></a>配置hystrix</h4><p><strong>pom</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">     <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>fastjson<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.67<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--web--&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"> <span class="comment">&lt;!--Eureka client --&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"> <span class="comment">&lt;!-- Hystrix --&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-hystrix<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"> <span class="comment">&lt;!-- 声明性REST客户端，使用注解修饰接口，动态实现 --&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-openfeign<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"> <span class="comment">&lt;!--为了后续放开hystrix.stream路径--&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-actuator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>并且，我们需要将autoAck设为false和处理完一条消息后发送ack给<code>RabbitMQ</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">DefaultConsumer defaultConsumer = <span class="keyword">new</span> DefaultConsumer(channel)&#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDelivery</span><span class="params">(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, <span class="keyword">byte</span>[] body)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">                String msg = <span class="keyword">new</span> String(body, <span class="string">"utf-8"</span>);</span><br><span class="line">                System.out.println(<span class="string">"receive1 : "</span> + msg);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">                    channel.basicAck(envelope.getDeliveryTag(),<span class="keyword">false</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">boolean</span> autoack = <span class="keyword">false</span>;</span><br><span class="line">        channel.basicConsume(QUEUE_NAME,autoack,defaultConsumer);</span><br></pre></td></tr></table></figure>
+<p><strong>application.yml</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">eureka-consumer-feign-hystrix</span></span><br><span class="line"><span class="comment"># 当前应用名称</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://localhost:7000/eureka/</span></span><br><span class="line"> <span class="comment"># 映射到Eureka server的路径</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">9001</span></span><br><span class="line"><span class="attr">feign:</span></span><br><span class="line">  <span class="attr">hystrix:</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line"><span class="comment"># an OpenFeign client will be wrapped with a Hystrix circuit breaker</span></span><br><span class="line"><span class="comment"># 一个OpenFeign客户端将包装有Hystrix断路器</span></span><br><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">endpoints:</span></span><br><span class="line">    <span class="attr">web:</span></span><br><span class="line">      <span class="attr">exposure:</span></span><br><span class="line">        <span class="attr">include:</span> <span class="string">hystrix.stream</span></span><br><span class="line"><span class="comment"># 为了给Hystrix Dashboard提供使用</span></span><br></pre></td></tr></table></figure>
 
+<p><strong>启动类配置</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableFeignClients</span></span><br><span class="line"><span class="comment">//扫描包下被@FeignClient注解的，需要和@Configuration同时使用</span></span><br><span class="line"><span class="meta">@EnableHystrix</span></span><br><span class="line"><span class="comment">//开启断路器，并且自动配置找到Hystrix类（if they are available）</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CloudConsumerFeignHystrixApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(CloudConsumerFeignHystrixApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p><strong>远程调用</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="comment">// name： the service id with optional protocol prefix.带有可选协议前缀的服务ID</span></span><br><span class="line"><span class="comment">// fallback： 指定的Feign客户端接口的后备类。fallback类必须实现该接口并且是一个有效的spring bean</span></span><br><span class="line"><span class="comment">//Fallback class for the specified Feign client interface. The fallback class must</span></span><br><span class="line"><span class="comment">// implement the interface annotated by this annotation and be a valid spring bean.</span></span><br><span class="line"><span class="meta">@FeignClient</span>(name = <span class="string">"eureka-producer"</span>,fallback = HelloRemoteHystrix<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">interface</span> <span class="title">HelloRemote</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/hello"</span>)</span><br><span class="line">    <span class="function">String <span class="title">hello</span><span class="params">(@RequestBody JSONObject requestJSON)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>fallback类</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloRemoteHystrix</span> <span class="keyword">implements</span> <span class="title">HelloRemote</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">hello</span><span class="params">(JSONObject requestJSON)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"hello world"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>controller</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> HelloRemote helloRemote;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/hello/&#123;name&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">hello</span><span class="params">(@PathVariable(name = <span class="string">"name"</span>)</span>String name)</span>&#123;</span><br><span class="line">        JSONObject requestJSON = <span class="keyword">new</span> JSONObject();</span><br><span class="line">        requestJSON.put(<span class="string">"name"</span>,name);</span><br><span class="line">        <span class="keyword">return</span> helloRemote.hello(requestJSON);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>测试</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">将eureka-server，producer，feign-hystrix三个项目启动，在eureka-server上可以看到producer和feign-hystrix都已经注册成功。</span><br><span class="line">访问：localhost:9001&#x2F;hello&#x2F;huskyui</span><br><span class="line">hello, huskyui Tue Mar 24 14:34:44 CST 2020</span><br><span class="line">将producer关闭</span><br><span class="line">访问：localhost:9001&#x2F;hello&#x2F;huskyui</span><br><span class="line">hello world</span><br><span class="line">再次将producer启动</span><br><span class="line">hello, huskyui Tue Mar 24 14:40:27 CST 2020</span><br><span class="line"></span><br><span class="line">这边，可以看到熔断能力，以及自我恢复能力</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置一个Hystrix-dashboard"><a href="#配置一个Hystrix-dashboard" class="headerlink" title="配置一个Hystrix dashboard"></a>配置一个Hystrix dashboard</h4><p><strong>pom</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-hystrix<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-hystrix-dashboard<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>application.yml</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">hystrix-dashboard</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">11000</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>添加注解@EnableHystrixDashboard</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableHystrixDashboard</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CloudHystrixDashboardApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(CloudHystrixDashboardApplication<span class="class">.<span class="keyword">class</span>, <span class="title">args</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>测试</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">运行该项目</span><br><span class="line">访问： http:&#x2F;&#x2F;localhost:11000&#x2F;hystrix</span><br><span class="line">在启动后输入http:&#x2F;&#x2F;localhost:9001&#x2F;actuator&#x2F;hystrix.stream</span><br><span class="line">9001是feign-hystrix的项目的端口，当时我们引入了actuator，开放hystrix.stream</span><br><span class="line">可以看到dashboard相关</span><br></pre></td></tr></table></figure>
 
 
       </div>
       
       
+        <br>
+        
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-03-24T15:20:07+08:00">
+  <a class='notlink'>
+    <i class="fas fa-clock" aria-hidden="true"></i>
+    <p>updated at Mar 24, 2020</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/SpringCloud/" rel="nofollow"><i class="fas fa-tag" aria-hidden="true"></i><p>SpringCloud</p></a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Hystrix/" rel="nofollow"><i class="fas fa-tag" aria-hidden="true"></i><p>Hystrix</p></a></div>
+
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="QQ好友" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/03/23/SpringCloud-Hystrix/&title=SpringCloud-Hystrix | huskyui&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/assets@19.1.9/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="QQ空间" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://yoursite.com/2020/03/23/SpringCloud-Hystrix/&title=SpringCloud-Hystrix | huskyui&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/assets@19.1.9/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="微博" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/03/23/SpringCloud-Hystrix/&title=SpringCloud-Hystrix | huskyui&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/assets@19.1.9/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+      
       
           <div class="prev-next">
-              
-                  <section class="prev">
-                      <span class="art-item-left">
-                          <h6><i class="fas fa-chevron-left" aria-hidden="true"></i>&nbsp;Previous</h6>
-                          <h4>
-                              <a href="/2020/03/01/RabbitMQ-%E5%8F%91%E5%B8%83-%E8%AE%A2%E9%98%85/" rel="prev" title="RabbitMQ-发布/订阅">
-                                
-                                    RabbitMQ-发布/订阅
-                                
-                              </a>
-                          </h4>
-                          
-                              
-                              <h6 class="tags">
-                                  <a class="tag" href="/tags/RabbitMQ/"><i class="fas fa-tag fa-fw" aria-hidden="true"></i> RabbitMQ</a>
-                              </h6>
-                          
-                      </span>
-                  </section>
               
               
                   <section class="next">
                       <span class="art-item-right" aria-hidden="true">
                           <h6>Next&nbsp;<i class="fas fa-chevron-right" aria-hidden="true"></i></h6>
                           <h4>
-                              <a href="/2020/01/10/0109-%E4%BB%80%E4%B9%88%E6%98%AF%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="prev" title="0109 什么是微服务">
+                              <a href="/2020/03/20/SpringCloud-Eureka/" rel="prev" title="SpringCloud-Eureka">
                                   
-                                      0109 什么是微服务
+                                      SpringCloud-Eureka
                                   
                               </a>
                           </h4>
                           
                               
                               <h6 class="tags">
-                                  <a class="tag" href="/tags/Spring-cloud/"><i class="fas fa-tag fa-fw" aria-hidden="true"></i> Spring cloud</a>
+                                  <a class="tag" href="/tags/SpringCloud/"><i class="fas fa-tag fa-fw" aria-hidden="true"></i> SpringCloud</a> <a class="tag" href="/tags/Eureka/"><i class="fas fa-tag fa-fw" aria-hidden="true"></i> Eureka</a>
                               </h6>
                           
                       </span>
@@ -478,6 +544,13 @@
 <!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
 
 
+
+  <script>
+    window.subData = {
+      title: 'SpringCloud-Hystrix',
+      tools: true
+    }
+  </script>
 
 
 </div>
@@ -626,6 +699,20 @@
           
             
               
+  <section class='widget toc-wrapper'>
+    
+<header class='pure'>
+  <div><i class="fas fa-list fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;TOC</div>
+  
+    <!-- <div class='wrapper'><a class="s-toc rightBtn" rel="external nofollow noopener noreferrer" href="javascript:void(0)"><i class="fas fa-thumbtack fa-fw"></i></a></div> -->
+  
+</header>
+
+    <div class='content pure'>
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Hystrix"><span class="toc-text">Hystrix</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#配置hystrix"><span class="toc-text">配置hystrix</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#配置一个Hystrix-dashboard"><span class="toc-text">配置一个Hystrix dashboard</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
 
             
           
