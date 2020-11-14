@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+  <title>zookeeper-简介 | huskyui</title>
+  
+  
+
+  
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- meta -->
+  
+
+  <!-- link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.10.1/css/all.min.css">
+  
+
+  
+
+  
+    
+<link rel="stylesheet" href="/style.css">
+
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+  
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  
+  
+  <div class="cover-wrapper">
+    <cover class='cover post half'>
+      
+        
+  <h1 class='title'>面对疾风吧</h1>
+
+
+  <div class="m_search">
+    <form name="searchform" class="form u-search-form">
+      <input type="text" class="input u-search-input" placeholder="" />
+      <i class="icon fas fa-search fa-fw"></i>
+    </form>
+  </div>
+
+<div class='menu navgation'>
+  <ul class='h-list'>
+    
+      
+        <li>
+          <a class="nav home" href="/"
+            
+            
+            id="home">
+            <i class='fas fa-rss fa-fw'></i>&nbsp;博文
+          </a>
+        </li>
+      
+        <li>
+          <a class="nav home" href="/projects/"
+            
+            
+            id="projects">
+            <i class='fas fa-code-branch fa-fw'></i>&nbsp;项目
+          </a>
+        </li>
+      
+        <li>
+          <a class="nav home" href="/friends/"
+            
+              rel="nofollow"
+            
+            
+            id="friends">
+            <i class='fas fa-link fa-fw'></i>&nbsp;友链
+          </a>
+        </li>
+      
+        <li>
+          <a class="nav home" href="/about/"
+            
+              rel="nofollow"
+            
+            
+            id="about">
+            <i class='fas fa-info-circle fa-fw'></i>&nbsp;关于
+          </a>
+        </li>
+      
+    
+  </ul>
+</div>
+
+      
+    </cover>
+    <header class="l_header pure">
+  <div id="loading-bar-wrapper">
+    <div id="loading-bar" class="pure"></div>
+  </div>
+
+	<div class='wrapper'>
+		<div class="nav-main container container--flex">
+      <a class="logo flat-box" href='/' >
+        
+          huskyui
+        
+      </a>
+			<div class='menu navgation'>
+				<ul class='h-list'>
+          
+  					
+  						<li>
+								<a class="nav flat-box" href="/"
+                  
+                  
+                  id="home">
+									<i class='fas fa-grin fa-fw'></i>&nbsp;示例
+								</a>
+							</li>
+      			
+  						<li>
+								<a class="nav flat-box" href="/blog/categories/"
+                  
+                    rel="nofollow"
+                  
+                  
+                  id="blogcategories">
+									<i class='fas fa-folder-open fa-fw'></i>&nbsp;分类
+								</a>
+							</li>
+      			
+  						<li>
+								<a class="nav flat-box" href="/blog/tags/"
+                  
+                    rel="nofollow"
+                  
+                  
+                  id="blogtags">
+									<i class='fas fa-hashtag fa-fw'></i>&nbsp;标签
+								</a>
+							</li>
+      			
+  						<li>
+								<a class="nav flat-box" href="/blog/archives/"
+                  
+                    rel="nofollow"
+                  
+                  
+                  id="blogarchives">
+									<i class='fas fa-archive fa-fw'></i>&nbsp;归档
+								</a>
+							</li>
+      			
+      		
+				</ul>
+			</div>
+
+			
+				<div class="m_search">
+					<form name="searchform" class="form u-search-form">
+						<input type="text" class="input u-search-input" placeholder="Search" />
+						<i class="icon fas fa-search fa-fw"></i>
+					</form>
+				</div>
+			
+			<ul class='switcher h-list'>
+				
+					<li class='s-search'><a class="fas fa-search fa-fw" href='javascript:void(0)'></a></li>
+				
+				<li class='s-menu'><a class="fas fa-bars fa-fw" href='javascript:void(0)'></a></li>
+			</ul>
+		</div>
+
+		<div class='nav-sub container container--flex'>
+			<a class="logo flat-box"></a>
+			<ul class='switcher h-list'>
+				<li class='s-comment'><a class="flat-btn fas fa-comments fa-fw" href='javascript:void(0)'></a></li>
+        
+          <li class='s-toc'><a class="flat-btn fas fa-list fa-fw" href='javascript:void(0)'></a></li>
+        
+			</ul>
+		</div>
+	</div>
+</header>
+	<aside class="menu-phone">
+    <header>
+		<nav class="menu navgation">
+      <ul>
+        
+          
+            <li>
+							<a class="nav flat-box" href="/"
+                
+                
+                id="home">
+								<i class='fas fa-clock fa-fw'></i>&nbsp;近期文章
+							</a>
+            </li>
+          
+            <li>
+							<a class="nav flat-box" href="/blog/archives/"
+                
+                  rel="nofollow"
+                
+                
+                id="blogarchives">
+								<i class='fas fa-archive fa-fw'></i>&nbsp;文章归档
+							</a>
+            </li>
+          
+            <li>
+							<a class="nav flat-box" href="/projects/"
+                
+                
+                id="projects">
+								<i class='fas fa-code-branch fa-fw'></i>&nbsp;开源项目
+							</a>
+            </li>
+          
+            <li>
+							<a class="nav flat-box" href="/friends/"
+                
+                  rel="nofollow"
+                
+                
+                id="friends">
+								<i class='fas fa-link fa-fw'></i>&nbsp;我的友链
+							</a>
+            </li>
+          
+            <li>
+							<a class="nav flat-box" href="https://xaoxuu.com/wiki/material-x/"
+                
+                  rel="nofollow"
+                
+                
+                id="https:xaoxuu.comwikimaterial-x">
+								<i class='fas fa-book fa-fw'></i>&nbsp;主题文档
+							</a>
+            </li>
+          
+            <li>
+							<a class="nav flat-box" href="/about/"
+                
+                  rel="nofollow"
+                
+                
+                id="about">
+								<i class='fas fa-info-circle fa-fw'></i>&nbsp;关于小站
+							</a>
+            </li>
+          
+       
+      </ul>
+		</nav>
+    </header>
+	</aside>
+<script>setLoadingBarProgress(40);</script>
+
+  </div>
+
+
+  <div class="l_body">
+    <div class='body-wrapper'>
+      <div class='l_main'>
+  
+
+  <article id="post" class="post white-box article-type-post" itemscope itemprop="blogPost">
+    
+
+
+  <section class='meta'>
+    
+    
+    <div class="meta" id="header-meta">
+      
+        
+  
+    <h1 class="title">
+      <a href="/2020/04/24/zookeeper-%E7%AE%80%E4%BB%8B/">
+        zookeeper-简介
+      </a>
+    </h1>
+  
+
+
+      
+      <div class='new-meta-box'>
+        
+          
+        
+          
+            
+  <div class='new-meta-item author'>
+    
+      <a href="http://yoursite.com" rel="nofollow">
+        
+          <i class="fas fa-user" aria-hidden="true"></i>
+        
+        <p>huskyui</p>
+      </a>
+    
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date">
+  <a class='notlink'>
+    <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+    <p>2020-04-24</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+          
+            
+  
+    <div class="new-meta-item browse busuanzi">
+      <a class='notlink'>
+        <i class="fas fa-eye" aria-hidden="true"></i>
+        <p>
+          <span id="busuanzi_value_page_pv">
+            <i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i>
+          </span>
+        </p>
+      </a>
+    </div>
+  
+
+
+          
+        
+          
+            
+  
+
+          
+        
+          
+            
+
+          
+        
+      </div>
+      
+        <hr>
+      
+    </div>
+  </section>
+
+
+    <section class="article typo">
+      <div class="article-entry" itemprop="articleBody">
+        <h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><pre><code>ZooKeeper: A Distributed Coordination Service for Distributed Applications
+zooKeeper:一个分布式应用的分布式协调服务
+ZooKeeper is a distributed, open-source coordination service for distributed applications. It exposes a simple set of primitives that distributed applications can build upon to implement higher level services for synchronization, configuration maintenance, and groups and naming. It is designed to be easy to program to, and uses a data model styled after the familiar directory tree structure of file systems. It runs in Java and has bindings for both Java and C.
+zooKeeper是一个分布式应用的分布式，开源，协调服务。它提供了一组简单的原语，分布式应用可以在这些原语基础上实现更高级的服务，用于同步，配置维护，组合命名。它被设计易于使用，并使用了风格和文件系统相似的数据模型。它在java运行，并具有java和c绑定。
+Coordination services are notoriously hard to get right. They are especially prone to errors such as race conditions and deadlock. The motivation behind ZooKeeper is to relieve distributed applications the responsibility of implementing coordination services from scratch.
+协调服务是出了名的难写。他们特别容易出现竞争条件和死锁错误。zookeeper背后的动机是为了减少分布式应用程序从头实现协调服务的责任。
+Design Goals
+ZooKeeper is simple. ZooKeeper allows distributed processes to coordinate with each other through a shared hierarchical namespace which is organized similarly to a standard file system. The namespace consists of data registers - called znodes, in ZooKeeper parlance - and these are similar to files and directories. Unlike a typical file system, which is designed for storage, ZooKeeper data is kept in-memory, which means ZooKeeper can achieve high throughput and low latency numbers.
+zooKeeper是简单的。zooKeeper允许分布式进程通过共享的层次命名空间相互协调，该命名空间类似于标准文件系统。命名空间由数据寄存器注册，用zooKeeper的话说叫znodes，类似于文件系统中的目录和文件。不像典型的文件系统，zookeeper是设计用于保存在内存中，意味着zooKeeper可以实现高吞吐量和低延迟率。
+The ZooKeeper implementation puts a premium on high performance, highly available, strictly ordered access. The performance aspects of ZooKeeper means it can be used in large, distributed systems. The reliability aspects keep it from being a single point of failure. The strict ordering means that sophisticated synchronization primitives can be implemented at the client.
+ZooKeeper实施对高性能，高可用性，严格有序访问加以重视。 ZooKeeper的性能方面意味着它可以在大型的分布式系统中使用。 可靠性方面使它不会成为单点故障。 严格排序意味着可以在客户端上实现复杂的同步原语。
+ZooKeeper is replicated. Like the distributed processes it coordinates, ZooKeeper itself is intended to be replicated over a set of hosts called an ensemble.
+ZooKeeper是复制的。与它所协调的分布式进程一样，ZooKeeper本身也打算在一组称为集合的主机上进行复制。
+The servers that make up the ZooKeeper service must all know about each other. They maintain an in-memory image of state, along with a transaction logs and snapshots in a persistent store. As long as a majority of the servers are available, the ZooKeeper service will be available.
+组成ZooKeeper服务的服务器必须相互了解。它们在内存中维护状态映像，以及持久存储中的事务日志和快照。只要大多数服务器可用，ZooKeeper服务就可用。
+Clients connect to a single ZooKeeper server. The client maintains a TCP connection through which it sends requests, gets responses, gets watch events, and sends heart beats. If the TCP connection to the server breaks, the client will connect to a different server.
+客户端连接到单个ZooKeeper服务器。客户端维护一个TCP连接，通过它发送请求、获取响应、获取监视事件和发送心跳。如果到服务器的TCP连接中断，客户机将连接到另一台服务器。
+ZooKeeper is ordered. ZooKeeper stamps each update with a number that reflects the order of all ZooKeeper transactions. Subsequent operations can use the order to implement higher-level abstractions, such as synchronization primitives.
+Zookeeper是有序的。ZooKeeper用一个数字来标记每个更新，这个数字反映了所有ZooKeeper事务的顺序。后续操作可以使用该顺序实现更高级别的抽象，比如同步原语。
+ZooKeeper is fast. It is especially fast in &quot;read-dominant&quot; workloads. ZooKeeper applications run on thousands of machines, and it performs best where reads are more common than writes, at ratios of around 10:1.
+ZooKeeper很快。在“以读取为主”的工作负载中，它的速度特别快。ZooKeeper应用程序运行在数千台机器上，当读操作比写操作更常见时，它的性能最好，比率约为10:1。
+Data model and the hierarchical namespace
+The namespace provided by ZooKeeper is much like that of a standard file system. A name is a sequence of path elements separated by a slash (/). Every node in ZooKeeper&apos;s namespace is identified by a path.
+数据模型和分层名称空间
+
+ZooKeeper提供的名称空间与标准文件系统的名称空间非常相似。 名称是由斜杠（/）分隔的一系列路径元素。 ZooKeeper命名空间中的每个节点都由路径标识。
+Nodes and ephemeral nodes
+Unlike standard file systems, each node in a ZooKeeper namespace can have data associated with it as well as children. It is like having a file-system that allows a file to also be a directory. (ZooKeeper was designed to store coordination data: status information, configuration, location information, etc., so the data stored at each node is usually small, in the byte to kilobyte range.) We use the term znode to make it clear that we are talking about ZooKeeper data nodes.
+
+Znodes maintain a stat structure that includes version numbers for data changes, ACL changes, and timestamps, to allow cache validations and coordinated updates. Each time a znode&apos;s data changes, the version number increases. For instance, whenever a client retrieves data it also receives the version of the data.
+
+The data stored at each znode in a namespace is read and written atomically. Reads get all the data bytes associated with a znode and a write replaces all the data. Each node has an Access Control List (ACL) that restricts who can do what.
+
+ZooKeeper also has the notion of ephemeral nodes. These znodes exists as long as the session that created the znode is active. When the session ends the znode is deleted.
+节点和短暂节点
+
+与标准文件系统不同，ZooKeeper命名空间中的每个节点都可以具有与其关联的数据以及子节点。 就像拥有一个文件系统一样，该文件系统也允许文件成为目录。 （ZooKeeper旨在存储协调数据：状态信息，配置，位置信息等，因此存储在每个节点上的数据通常很小，在字节到千字节范围内。）我们使用术语znode来明确表示 在谈论ZooKeeper数据节点。
+
+Znodes维护一个统计信息结构，其中包括用于数据更改，ACL更改和时间戳的版本号，以允许进行缓存验证和协调更新。 znode的数据每次更改时，版本号都会增加。 例如，每当客户端检索数据时，它也接收数据的版本。
+
+原子地读取和写入存储在名称空间中每个znode上的数据。 读取将获取与znode关联的所有数据字节，而写入将替换所有数据。 每个节点都有一个访问控制列表（ACL），用于限制谁可以执行操作。
+
+ZooKeeper还具有短暂节点的概念。 只要创建znode的会话处于活动状态，这些znode就存在。 会话结束时，将删除znode。
+
+Conditional updates and watches
+ZooKeeper supports the concept of watches. Clients can set a watch on a znode. A watch will be triggered and removed when the znode changes. When a watch is triggered, the client receives a packet saying that the znode has changed. If the connection between the client and one of the ZooKeeper servers is broken, the client will receive a local notification.
+
+条件更新和手表ZooKeeper支持手表的概念。客户端可以在znode上设置手表。当znode发生变化时，将触发并删除一个手表。当一个手表被触发时，客户端会收到一个数据包，说znode已经改变了。如果客户端和一个ZooKeeper服务器之间的连接断开，客户端将收到一个本地通知。</code></pre><h4 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h4><p>Standalone Operation</p>
+<pre><code>1.下载zookeeper，通过fileZile上传上去
+tar -zxvf apache-zookeeper-3.6.0-bin.tar.gz
+2.安装java
+3.将解压后的文件名重命名
+mv apache-zookeeper-3.6.0-bin zookeeper
+并移动至/usr/lib
+mv /tmp/zookeeper/ /usr/lib
+Standalone Operation
+单击演示
+
+4.生成一个zoo.cfg
+vi conf zoo.cfg
+​```
+tickTime=2000
+dataDir=/var/lib/zookeeper
+clientPort=2181
+​```
+启动
+sh bin/zkServer.sh start
+5.测试
+sh bin/zkCli.sh -server 127.0.0.1:2181
+ls /
+[ zookeeper]
+Next, create a new znode by running create /zk_test my_data. This creates a new znode and associates the string &quot;my_data&quot; with the node. You should see:
+[zkshell: 9] create /zk_test my_data
+Created /zk_test
+[zk: 127.0.0.1:2181(CONNECTED) 0] ls /
+[zk_test, zookeeper]
+[zk: 127.0.0.1:2181(CONNECTED) 3] get /zk_test
+my_data
+
+[zk: 127.0.0.1:2181(CONNECTED) 5] get -s /zk_test
+my_data
+cZxid = 0x3
+ctime = Wed Apr 22 18:33:23 CST 2020
+mZxid = 0x3
+mtime = Wed Apr 22 18:33:23 CST 2020
+pZxid = 0x3
+cversion = 0
+dataVersion = 0
+aclVersion = 0
+ephemeralOwner = 0x0
+dataLength = 7
+numChildren = 0
+[zk: 127.0.0.1:2181(CONNECTED) 6] set /zk_test junk
+[zk: 127.0.0.1:2181(CONNECTED) 7] get -s /zk_test
+junk
+cZxid = 0x3
+ctime = Wed Apr 22 18:33:23 CST 2020
+mZxid = 0x7
+mtime = Fri Apr 24 17:48:13 CST 2020
+pZxid = 0x3
+cversion = 0
+dataVersion = 1
+aclVersion = 0
+ephemeralOwner = 0x0
+dataLength = 4
+numChildren = 0
+可以看到mTime被改变了，以及znode的值
+[zk: 127.0.0.1:2181(CONNECTED) 8] delete /zk_test
+删除/zk_test
+[zk: 127.0.0.1:2181(CONNECTED) 9] get -s /zk_test
+org.apache.zookeeper.KeeperException$NoNodeException: KeeperErrorCode = NoNode for /zk_test</code></pre><p>集群模式 后续再介绍</p>
+
+      </div>
+      
+      
+        <br>
+        
+
+
+  <section class='meta' id="footer-meta">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-04-24T18:15:35+08:00">
+  <a class='notlink'>
+    <i class="fas fa-clock" aria-hidden="true"></i>
+    <p>updated at Apr 24, 2020</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="QQ好友" rel="external nofollow noopener noreferrer"
+          
+          href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/04/24/zookeeper-%E7%AE%80%E4%BB%8B/&title=zookeeper-简介 | huskyui&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/assets@19.1.9/logo/128/qq.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="QQ空间" rel="external nofollow noopener noreferrer"
+          
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://yoursite.com/2020/04/24/zookeeper-%E7%AE%80%E4%BB%8B/&title=zookeeper-简介 | huskyui&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/assets@19.1.9/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="微博" rel="external nofollow noopener noreferrer"
+          
+          href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/04/24/zookeeper-%E7%AE%80%E4%BB%8B/&title=zookeeper-简介 | huskyui&summary="
+          
+          >
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/assets@19.1.9/logo/128/weibo.png">
+          
+        </a>
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+  </section>
+
+
+      
+      
+          <div class="prev-next">
+              
+                  <section class="prev">
+                      <span class="art-item-left">
+                          <h6><i class="fas fa-chevron-left" aria-hidden="true"></i>&nbsp;Previous</h6>
+                          <h4>
+                              <a href="/2020/05/07/RabbitMQ-Publisher%20Confirms/" rel="prev" title="RabbitMQ-Publisher Confirms">
+                                
+                                    RabbitMQ-Publisher Confirms
+                                
+                              </a>
+                          </h4>
+                          
+                      </span>
+                  </section>
+              
+              
+                  <section class="next">
+                      <span class="art-item-right" aria-hidden="true">
+                          <h6>Next&nbsp;<i class="fas fa-chevron-right" aria-hidden="true"></i></h6>
+                          <h4>
+                              <a href="/2020/04/20/springboot%E7%BA%BF%E7%A8%8B%E6%B1%A0/" rel="prev" title="springboot线程池">
+                                  
+                                      springboot线程池
+                                  
+                              </a>
+                          </h4>
+                          
+                      </span>
+                  </section>
+              
+          </div>
+      
+    </section>
+  </article>
+
+
+
+  <!-- 显示推荐文章和评论 -->
+
+
+
+  
+
+
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'zookeeper-简介',
+      tools: true
+    }
+  </script>
+
+
+</div>
+<aside class='l_side'>
+  
+    
+    
+      
+      
+        
+          
+          
+            
+              <section class='widget author'>
+  <div class='content pure'>
+    
+      <div class='avatar'>
+        <img class='avatar' src='https://s2.ax1x.com/2020/01/10/lhSsW8.png'/>
+      </div>
+    
+    
+      <div class='text'>
+        
+        
+        
+          <p><span id="jinrishici-sentence">huskyui</span></p>
+          <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+        
+      </div>
+    
+    
+      <div class="social-wrapper">
+        
+          
+            <a href="/atom.xml"
+              class="social fas fa-rss flat-btn"
+              target="_blank"
+              rel="external nofollow noopener noreferrer">
+            </a>
+          
+        
+          
+            <a href="mailto:me@xaoxuu.com"
+              class="social fas fa-envelope flat-btn"
+              target="_blank"
+              rel="external nofollow noopener noreferrer">
+            </a>
+          
+        
+          
+            <a href="https://github.com/xaoxuu"
+              class="social fab fa-github flat-btn"
+              target="_blank"
+              rel="external nofollow noopener noreferrer">
+            </a>
+          
+        
+          
+            <a href="https://music.163.com/#/user/home?id=63035382"
+              class="social fas fa-headphones-alt flat-btn"
+              target="_blank"
+              rel="external nofollow noopener noreferrer">
+            </a>
+          
+        
+      </div>
+    
+  </div>
+</section>
+
+            
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+      
+        
+          
+          
+        
+          
+          
+            
+              <section class='widget plain'>
+  
+<header class='pure'>
+  <div><i class="fas fa-file fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;文本部件</div>
+  
+</header>
+
+  <div class='content pure'>
+    <p>这是一段支持markdown的文本<br><img src="https://img.vim-cn.com/4e/3c87a2fd28fd0b9c2f27ce3f83f1e9275d0488.png" alt=""></p>
+
+  </div>
+</section>
+
+            
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+      
+        
+          
+          
+        
+          
+          
+        
+          
+          
+            
+              
+  <section class='widget toc-wrapper'>
+    
+<header class='pure'>
+  <div><i class="fas fa-list fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;TOC</div>
+  
+    <!-- <div class='wrapper'><a class="s-toc rightBtn" rel="external nofollow noopener noreferrer" href="javascript:void(0)"><i class="fas fa-thumbtack fa-fw"></i></a></div> -->
+  
+</header>
+
+    <div class='content pure'>
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#简介"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装zookeeper"><span class="toc-text">安装zookeeper</span></a></li></ol>
+    </div>
+  </section>
+
+
+            
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+      
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+            
+              <section class='widget grid'>
+  
+<header class='pure'>
+  <div><i class="fas fa-map-signs fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;站内导航</div>
+  
+</header>
+
+  <div class='content pure'>
+    <ul class="grid navgation">
+      
+        <li><a class="flat-box" title="/" href="/"
+          
+          
+          id="home">
+          
+            <i class="fas fa-clock fa-fw" aria-hidden="true"></i>
+          
+          近期文章
+        </a></li>
+      
+        <li><a class="flat-box" title="/blog/archives/" href="/blog/archives/"
+          
+            rel="nofollow"
+          
+          
+          id="blogarchives">
+          
+            <i class="fas fa-archive fa-fw" aria-hidden="true"></i>
+          
+          文章归档
+        </a></li>
+      
+        <li><a class="flat-box" title="/projects/" href="/projects/"
+          
+          
+          id="projects">
+          
+            <i class="fas fa-code-branch fa-fw" aria-hidden="true"></i>
+          
+          开源项目
+        </a></li>
+      
+        <li><a class="flat-box" title="/friends/" href="/friends/"
+          
+            rel="nofollow"
+          
+          
+          id="friends">
+          
+            <i class="fas fa-link fa-fw" aria-hidden="true"></i>
+          
+          我的友链
+        </a></li>
+      
+        <li><a class="flat-box" title="https://xaoxuu.com/wiki/material-x/" href="https://xaoxuu.com/wiki/material-x/"
+          
+            rel="nofollow"
+          
+          
+          id="https:xaoxuu.comwikimaterial-x">
+          
+            <i class="fas fa-book fa-fw" aria-hidden="true"></i>
+          
+          主题文档
+        </a></li>
+      
+        <li><a class="flat-box" title="/about/" href="/about/"
+          
+            rel="nofollow"
+          
+          
+          id="about">
+          
+            <i class="fas fa-info-circle fa-fw" aria-hidden="true"></i>
+          
+          关于小站
+        </a></li>
+      
+    </ul>
+  </div>
+</section>
+
+            
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+      
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+            
+              
+
+            
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+      
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+            
+              
+
+            
+          
+        
+          
+          
+        
+          
+          
+        
+      
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+            
+              <section class='widget list'>
+  
+<header class='pure'>
+  <div><i class="fas fa-thumbs-up fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;强烈推荐</div>
+  
+</header>
+
+  <div class='content pure'>
+    <ul class="entry">
+      
+        <li><a class="flat-box" title="https://xaoxuu.com/wiki/hexo.sh/" href="https://xaoxuu.com/wiki/hexo.sh/"
+          
+          
+          >
+          <div class='name'>
+            
+              <i class=" fa-fw" aria-hidden="true"></i>
+            
+            &nbsp;&nbsp;Hexo脚本（Mac）
+          </div>
+          
+        </a></li>
+      
+        <li><a class="flat-box" title="https://xaoxuu.com/wiki/vim-cn.sh/" href="https://xaoxuu.com/wiki/vim-cn.sh/"
+          
+          
+          >
+          <div class='name'>
+            
+              <i class=" fa-fw" aria-hidden="true"></i>
+            
+            &nbsp;&nbsp;图床脚本（Mac）
+          </div>
+          
+        </a></li>
+      
+        <li><a class="flat-box" title="https://yasuotu.com" href="https://yasuotu.com"
+          
+          
+          >
+          <div class='name'>
+            
+              <i class=" fa-fw" aria-hidden="true"></i>
+            
+            &nbsp;&nbsp;图片在线压缩
+          </div>
+          
+        </a></li>
+      
+        <li><a class="flat-box" title="https://realfavicongenerator.net" href="https://realfavicongenerator.net"
+          
+          
+          >
+          <div class='name'>
+            
+              <i class=" fa-fw" aria-hidden="true"></i>
+            
+            &nbsp;&nbsp;生成Favicon
+          </div>
+          
+        </a></li>
+      
+        <li><a class="flat-box" title="https://mxclub.github.io/resume/" href="https://mxclub.github.io/resume/"
+          
+          
+          >
+          <div class='name'>
+            
+              <i class=" fa-fw" aria-hidden="true"></i>
+            
+            &nbsp;&nbsp;简历主题
+          </div>
+          
+        </a></li>
+      
+    </ul>
+  </div>
+</section>
+
+            
+          
+        
+      
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+      
+    
+
+  
+</aside>
+
+<footer id="footer" class="clearfix">
+  
+  
+    <div class="social-wrapper">
+      
+        
+          <a href="/atom.xml"
+            class="social fas fa-rss flat-btn"
+            target="_blank"
+            rel="external nofollow noopener noreferrer">
+          </a>
+        
+      
+        
+          <a href="mailto:me@xaoxuu.com"
+            class="social fas fa-envelope flat-btn"
+            target="_blank"
+            rel="external nofollow noopener noreferrer">
+          </a>
+        
+      
+        
+          <a href="https://github.com/xaoxuu"
+            class="social fab fa-github flat-btn"
+            target="_blank"
+            rel="external nofollow noopener noreferrer">
+          </a>
+        
+      
+        
+          <a href="https://music.163.com/#/user/home?id=63035382"
+            class="social fas fa-headphones-alt flat-btn"
+            target="_blank"
+            rel="external nofollow noopener noreferrer">
+          </a>
+        
+      
+    </div>
+  
+  <br>
+  <div><p>Blog content follows the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License</a></p>
+</div>
+  <div>
+    Use
+    <a href="https://xaoxuu.com/wiki/material-x/" target="_blank" class="codename">Material X</a>
+    as theme
+    
+      , 
+      total visits
+      <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span>
+      times
+    
+    . 
+  </div>
+</footer>
+<script>setLoadingBarProgress(80);</script>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+
+  <script>
+    var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+    var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+    var ALGOLIA_API_KEY = "";
+    var ALGOLIA_APP_ID = "";
+    var ALGOLIA_INDEX_NAME = "";
+    var AZURE_SERVICE_NAME = "";
+    var AZURE_INDEX_NAME = "";
+    var AZURE_QUERY_KEY = "";
+    var BAIDU_API_ID = "";
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/"||"/";
+    if(!ROOT.endsWith('/'))ROOT += '/';
+  </script>
+
+<script src="//instant.page/1.2.2" type="module" integrity="sha384-2xV8M5griQmzyiY3CDqh1dn4z3llDVqZDqzjzcY+jCBCk/a5fXJmuZ/40JJAPeoU"></script>
+
+
+  <script async src="https://cdn.jsdelivr.net/npm/scrollreveal@4.0.5/dist/scrollreveal.min.js"></script>
+  <script type="text/javascript">
+    $(function() {
+      const $reveal = $('.reveal');
+      if ($reveal.length === 0) return;
+      const sr = ScrollReveal({ distance: 0 });
+      sr.reveal('.reveal');
+    });
+  </script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+  <script type="text/javascript">
+    $(function() {
+      Waves.attach('.flat-btn', ['waves-button']);
+      Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+      Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+      Waves.attach('.flat-box', ['waves-block']);
+      Waves.attach('.float-box', ['waves-block', 'waves-float']);
+      Waves.attach('.waves-image');
+      Waves.init();
+    });
+  </script>
+
+
+  <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+  
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-backstretch/2.0.4/jquery.backstretch.min.js"></script>
+    <script type="text/javascript">
+      $(function(){
+        if ('.cover') {
+          $('.cover').backstretch(
+          ["https://img.vim-cn.com/29/91197b04c13f512f734a76d4ac422d89dbe229.jpg"],
+          {
+            duration: "6000",
+            fade: "2500"
+          });
+        } else {
+          $.backstretch(
+          ["https://img.vim-cn.com/29/91197b04c13f512f734a76d4ac422d89dbe229.jpg"],
+          {
+            duration: "6000",
+            fade: "2500"
+          });
+        }
+      });
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/app.js"></script>
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+
+
+<!-- 复制 -->
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  let COPY_SUCCESS = "Copied";
+  let COPY_FAILURE = "Copy failed";
+  /*页面载入完成后，创建复制按钮*/
+  !function (e, t, a) {
+    /* code */
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '  <i class="fa fa-copy"></i><span>Copy</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+
+      clipboard.on('success', function(e) {
+        //您可以加入成功提示
+        console.info('Action:', e.action);
+        console.info('Text:', e.text);
+        console.info('Trigger:', e.trigger);
+        success_prompt(COPY_SUCCESS);
+        e.clearSelection();
+      });
+      clipboard.on('error', function(e) {
+        //您可以加入失败提示
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+        fail_prompt(COPY_FAILURE);
+      });
+    }
+    initCopyCode();
+
+  }(window, document);
+
+  /**
+   * 弹出式提示框，默认1.5秒自动消失
+   * @param message 提示信息
+   * @param style 提示样式，有alert-success、alert-danger、alert-warning、alert-info
+   * @param time 消失时间
+   */
+  var prompt = function (message, style, time)
+  {
+      style = (style === undefined) ? 'alert-success' : style;
+      time = (time === undefined) ? 1500 : time*1000;
+      $('<div>')
+          .appendTo('body')
+          .addClass('alert ' + style)
+          .html(message)
+          .show()
+          .delay(time)
+          .fadeOut();
+  };
+
+  // 成功提示
+  var success_prompt = function(message, time)
+  {
+      prompt(message, 'alert-success', time);
+  };
+
+  // 失败提示
+  var fail_prompt = function(message, time)
+  {
+      prompt(message, 'alert-danger', time);
+  };
+
+  // 提醒
+  var warning_prompt = function(message, time)
+  {
+      prompt(message, 'alert-warning', time);
+  };
+
+  // 信息提示
+  var info_prompt = function(message, time)
+  {
+      prompt(message, 'alert-info', time);
+  };
+
+</script>
+
+
+<!-- fancybox -->
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script>
+  let LAZY_LOAD_IMAGE = "";
+  $(".article-entry").find("fancybox").find("img").each(function () {
+      var element = document.createElement("a");
+      $(element).attr("data-fancybox", "gallery");
+      $(element).attr("href", $(this).attr("src"));
+      /* 图片采用懒加载处理时,
+       * 一般图片标签内会有个属性名来存放图片的真实地址，比如 data-original,
+       * 那么此处将原本的属性名src替换为对应属性名data-original,
+       * 修改如下
+       */
+       if (LAZY_LOAD_IMAGE) {
+         $(element).attr("href", $(this).attr("data-original"));
+       }
+      $(this).wrap(element);
+  });
+</script>
+
+
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+</body>
+</html>
