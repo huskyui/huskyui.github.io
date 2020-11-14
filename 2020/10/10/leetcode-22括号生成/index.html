@@ -293,7 +293,7 @@
         
   
     <h1 class="title">
-      <a href="/2020/11/14/leetcode-22%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/">
+      <a href="/2020/10/10/leetcode-22%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/">
         leetcode-22括号生成
       </a>
     </h1>
@@ -325,7 +325,7 @@
             <div class="new-meta-item date">
   <a class='notlink'>
     <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-    <p>2020-11-14</p>
+    <p>2020-10-10</p>
   </a>
 </div>
 
@@ -426,6 +426,62 @@ class Solution {
 
 
 }
+//leetcode submit region end(Prohibit modification and deletion)
+
+
+
+
+//数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。 
+//
+// 
+//
+// 示例： 
+//
+// 输入：n = 3
+//输出：[
+//       &quot;((()))&quot;,
+//       &quot;(()())&quot;,
+//       &quot;(())()&quot;,
+//       &quot;()(())&quot;,
+//       &quot;()()()&quot;
+//     ]
+// 
+// Related Topics 字符串 回溯算法 
+// 👍 1356 👎 0
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+//leetcode submit region begin(Prohibit modification and deletion)
+class Solution {
+    // 全局变量
+    private List&lt;String&gt; list = new ArrayList&lt;&gt;();
+    public List&lt;String&gt; generateParenthesis(int n) {
+        // 生成题目当然不能是for循环生成
+        dfs(0, 0, n, &quot;&quot;);
+        return list;
+    }
+    public void dfs(int left, int right, int n, String path) {
+        // 排除掉 括号数量太多的选手
+        if (left &gt; n || right &gt; n) {
+            return;
+        }
+        // 如果右边大于左边，那么就删除当前选手
+        if (right&gt;left) {
+            return;
+        }
+        // final champion
+        if (left + right == 2 * n) {
+            list.add(path);
+            return;
+        }
+        dfs(left + 1, right, n, path + &quot;(&quot;);
+        dfs(left, right + 1, n, path + &quot;)&quot;);
+    }
+
+
+}
 //leetcode submit region end(Prohibit modification and deletion)</code></pre>
       </div>
       
@@ -438,10 +494,10 @@ class Solution {
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-11-14T16:57:50+08:00">
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2020-10-10T16:20:35+08:00">
   <a class='notlink'>
     <i class="fas fa-clock" aria-hidden="true"></i>
-    <p>updated at Nov 14, 2020</p>
+    <p>updated at Oct 10, 2020</p>
   </a>
 </div>
 
@@ -460,7 +516,7 @@ class Solution {
       
         <a class="-mob-share-qq" title="QQ好友" rel="external nofollow noopener noreferrer"
           
-          href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/11/14/leetcode-22%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/&title=leetcode-22括号生成 | huskyui&summary="
+          href="http://connect.qq.com/widget/shareqq/index.html?url=http://yoursite.com/2020/10/10/leetcode-22%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/&title=leetcode-22括号生成 | huskyui&summary="
           
           >
           
@@ -472,7 +528,7 @@ class Solution {
       
         <a class="-mob-share-qzone" title="QQ空间" rel="external nofollow noopener noreferrer"
           
-          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://yoursite.com/2020/11/14/leetcode-22%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/&title=leetcode-22括号生成 | huskyui&summary="
+          href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://yoursite.com/2020/10/10/leetcode-22%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/&title=leetcode-22括号生成 | huskyui&summary="
           
           >
           
@@ -484,7 +540,7 @@ class Solution {
       
         <a class="-mob-share-weibo" title="微博" rel="external nofollow noopener noreferrer"
           
-          href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/11/14/leetcode-22%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/&title=leetcode-22括号生成 | huskyui&summary="
+          href="http://service.weibo.com/share/share.php?url=http://yoursite.com/2020/10/10/leetcode-22%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/&title=leetcode-22括号生成 | huskyui&summary="
           
           >
           
