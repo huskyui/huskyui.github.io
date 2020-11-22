@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>导出csdn博客</title>
+      <link href="/2020/11/22/%E5%AF%BC%E5%87%BAcsdn%E5%8D%9A%E5%AE%A2/"/>
+      <url>/2020/11/22/%E5%AF%BC%E5%87%BAcsdn%E5%8D%9A%E5%AE%A2/</url>
+      
+        <content type="html"><![CDATA[<h3 id="工具简介"><a href="#工具简介" class="headerlink" title="工具简介"></a>工具简介</h3><ul><li>将csdn中博客导出，导出成markdown形式</li><li>支持将图片导出七牛云中，需要导出到其他的图床，需要自己提供对应的实现，文件中的（upload_file）方法</li><li>导出格式，支持hexo中格式<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3></li><li>七牛云配置（如果不换，也可以继续使用csdn image url ？ ）</li><li>本地保存路径</li><li>个人昵称<h3 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h3><a href="https://github.com/huskyui/exportCsdnBlog" target="_blank" rel="noopener">导出博客到本地,github仓库地址</a></li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> csdn </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>leetcode147.InsertionSortList</title>
       <link href="/2020/11/20/leetcode147-InsertionSortList/"/>
       <url>/2020/11/20/leetcode147-InsertionSortList/</url>
